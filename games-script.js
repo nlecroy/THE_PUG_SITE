@@ -1,27 +1,35 @@
 // Games Page JavaScript
 
-// Game URLs mapping for CrazyGames
+// Game URLs mapping for various unblocked game sites
 const gameUrls = {
-    'subway-surfers': 'https://www.crazygames.com/game/subway-surfers',
-    'temple-run-2': 'https://www.crazygames.com/game/temple-run-2',
-    'stickman-hook': 'https://www.crazygames.com/game/stickman-hook',
-    'funny-shooter-2': 'https://www.crazygames.com/game/funny-shooter-2',
-    'moto-x3m': 'https://www.crazygames.com/game/moto-x3m',
-    'stack-ball': 'https://www.crazygames.com/game/stack-ball',
-    'knife-hit': 'https://www.crazygames.com/game/knife-hit',
-    'slope': 'https://www.crazygames.com/game/slope'
+    'duck-life': 'https://duck.tinyexams.com/duck-life',
+    'slope-unblocked': 'https://slope-game.github.io/slope/index.html',
+    'run-3': 'https://run3.io',
+    'tetris': 'https://tetris.com/play-tetris',
+    '2048': 'https://play2048.co',
+    'tank-trouble': 'https://www.tanktrouble.com',
+    'chrome-dino': 'https://chromedino.com',
+    'flappy-bird': 'https://flappybird.io',
+    'pacman': 'https://www.google.com/logos/2010/pacman10-i.html',
+    'snake': 'https://www.google.com/fbx?fbx=snake_arcade',
+    'cookie-clicker': 'https://orteil.dashnet.org/cookieclicker/',
+    'geo-dash': 'https://geometry-dash.co'
 };
 
-// Embedded iframe URLs (these may or may not work due to CrazyGames restrictions)
+// Embedded iframe URLs (most unblocked games work in iframes)
 const embedUrls = {
-    'subway-surfers': 'https://games.crazygames.com/en_US/subway-surfers/index.html',
-    'temple-run-2': 'https://games.crazygames.com/en_US/temple-run-2/index.html',
-    'stickman-hook': 'https://games.crazygames.com/en_US/stickman-hook/index.html',
-    'funny-shooter-2': 'https://games.crazygames.com/en_US/funny-shooter-2/index.html',
-    'moto-x3m': 'https://games.crazygames.com/en_US/moto-x3m/index.html',
-    'stack-ball': 'https://games.crazygames.com/en_US/stack-ball/index.html',
-    'knife-hit': 'https://games.crazygames.com/en_US/knife-hit/index.html',
-    'slope': 'https://games.crazygames.com/en_US/slope/index.html'
+    'duck-life': 'https://duck.tinyexams.com/duck-life',
+    'slope-unblocked': 'https://slope-game.github.io/slope/index.html',
+    'run-3': 'https://run3.io',
+    'tetris': 'https://tetris.com/play-tetris',
+    '2048': 'https://play2048.co',
+    'tank-trouble': 'https://www.tanktrouble.com',
+    'chrome-dino': 'https://chromedino.com',
+    'flappy-bird': 'https://flappybird.io',
+    'pacman': 'https://www.google.com/logos/2010/pacman10-i.html',
+    'snake': 'https://www.google.com/fbx?fbx=snake_arcade',
+    'cookie-clicker': 'https://orteil.dashnet.org/cookieclicker/',
+    'geo-dash': 'https://geometry-dash.co'
 };
 
 // Add click handlers to all game cards
@@ -53,42 +61,30 @@ function loadGameInIframe(gameKey, gameName) {
 
     // Show notification
     if (typeof showPugNotification === 'function') {
-        showPugNotification(`🎮 Loading ${gameName}... Opening on CrazyGames! 🎮`);
+        showPugNotification(`🎮 Loading ${gameName}... 🎮`);
     }
 
-    // Since many games don't allow external embedding, open in new tab
-    const gameUrl = gameUrls[gameKey];
-    if (gameUrl) {
-        window.open(gameUrl, '_blank');
-    }
-
-    // Still try to embed (some games might work)
+    // Try to embed first
     const embedUrl = embedUrls[gameKey];
     if (embedUrl) {
         gameFrame.src = embedUrl;
-        gameOverlay.classList.add('hidden');
+        gameOverlay.style.display = 'none';
 
-        // Check if iframe loaded successfully after a delay
+        // Scroll to game frame
         setTimeout(() => {
-            // If it failed, show message
-            try {
-                if (!gameFrame.contentWindow) {
-                    gameOverlay.classList.remove('hidden');
-                    gameOverlay.querySelector('h3').textContent = 'Game opened in new tab!';
-                    gameOverlay.querySelector('p').textContent = '🐾 Check your new browser tab 🐾';
-                }
-            } catch (e) {
-                // Cross-origin error means the iframe loaded
-                gameOverlay.classList.add('hidden');
-            }
-        }, 2000);
-    }
+            document.querySelector('.embedded-game-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }, 300);
 
-    // Scroll to game frame
-    document.querySelector('.embedded-game-section').scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-    });
+        // If iframe fails to load, provide fallback
+        gameFrame.onerror = function() {
+            gameOverlay.style.display = 'flex';
+            gameOverlay.querySelector('h3').textContent = 'Having trouble loading?';
+            gameOverlay.querySelector('p').innerHTML = '🐾 <a href="' + gameUrls[gameKey] + '" target="_blank" style="color: #4ECDC4;">Click here to play in a new tab!</a> 🐾';
+        };
+    }
 }
 
 // Create particle explosion effect
